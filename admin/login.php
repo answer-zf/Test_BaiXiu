@@ -21,7 +21,7 @@ function login(){
   $email = $_POST['email'];
   $password = $_POST['password'];
 
-  $connect = mysqli_connect( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+  $connect = mysqli_connect(ZF_DB_HOST, ZF_DB_USER, ZF_DB_PASSWORD, ZF_DB_NAME);
   
   if (!$connect) {
     exit('<h1>连接数据库失败</h1>');
@@ -64,6 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="/static/assets/vendors/bootstrap/css/bootstrap.css">
   <link rel="stylesheet" type="text/css" href="/static/assets/vendors/animate/animate.min.css">
   <link rel="stylesheet" href="/static/assets/css/admin.css">
+  <link rel="stylesheet" type="text/css" href="/static/assets/vendors/nprogress/nprogress.css">
+
 </head>
 <body>
   <div class="login">
@@ -89,6 +91,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button class="btn btn-primary btn-block">登 录</button>
     </form>
   </div>
+
+  <script src="/static/assets/vendors/jquery/jquery.min.js"></script>
+  <!-- <script src="/static/assets/vendors/nprogress/nprogress.js"></script> -->
+  <script type="text/javascript">
+    $(function($){
+
+      var reg = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/      
+
+      $('#email').on('blur', function(){
+
+        var value = $(this).val()
+
+        if (!value || !reg.test(value) ) return
+
+          $.get('/admin/api/avatar.php', { callback: value }, function(res){
+            
+            if(!res) return
+            // $('.avatar').attr('src', res)
+            $('.avatar').fadeOut(function() {
+              $(this).on('load', function () {
+                $(this).fadeIn()
+              }).attr('src', res)
+            })
+        })
+      })
+    }) 
+  </script>
 </body>
 </html>
  

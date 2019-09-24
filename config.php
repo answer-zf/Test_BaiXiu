@@ -8,22 +8,27 @@
  * 数据库地址
  */
 
-define('DB_HOST', 'localhost');
+define('ZF_DB_HOST', 'localhost');
 
 /**
  * 数据库名称
  */
 
-define('DB_NAME', 'baixiu');
+define('ZF_DB_NAME', 'baixiu');
 
 /**
  * 数据库账号
  */
 
-define('DB_USER', 'root');
+define('ZF_DB_USER', 'root');
 
 /**
  * 数据库密码
  */
 
-define('DB_PASSWORD', '123456');
+define('ZF_DB_PASSWORD', '123456');
+
+/**
+ * 网站根目录
+ */
+//define('ROOT_DIR', dirname(__FILE__));

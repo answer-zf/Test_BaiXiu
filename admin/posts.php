@@ -1,3 +1,7 @@
+<?php 
+  require_once '../functions.php';
+  zf_get_current_user();
+?>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -13,13 +17,7 @@
   <script>NProgress.start()</script>
 
   <div class="main">
-    <nav class="navbar">
-      <button class="btn btn-default navbar-btn fa fa-bars"></button>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="profile.html"><i class="fa fa-user"></i>个人中心</a></li>
-        <li><a href="login.html"><i class="fa fa-sign-out"></i>退出</a></li>
-      </ul>
-    </nav>
+<?php include 'inc/navbar.php' ?>
     <div class="container-fluid">
       <div class="page-title">
         <h1>所有文章</h1>
