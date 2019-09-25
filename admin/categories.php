@@ -93,7 +93,7 @@
         <div class="col-md-8">
           <div class="page-action">
             <!-- show when multiple checked -->
-            <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none" id="all-delete">批量删除</a>
+            <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none" id="btn_delete">批量删除</a>
           </div>
           <table class="table table-striped table-bordered table-hover">
             <thead>
@@ -107,7 +107,7 @@
             <tbody id="tbody">
               <?php foreach ($categories as $row): ?>
                 <tr>
-                  <td class="text-center"><input type="checkbox"></td>
+                  <td class="text-center"><input type="checkbox" data-id="<?php echo $row['id'] ?>"></td>
                   <td><?php echo $row['name'] ?></td>
                   <td><?php echo $row['slug'] ?></td>
                   <td class="text-center">
@@ -132,17 +132,25 @@
   <script>
     $(function($) {
       var $checkbox = $('#tbody input[type="checkbox"]')
-      $checkbox.on('change',function(){
-        $checkbox.each(function(i,item){
-          console.log($(item).prop('checked'))
-          // if ($(item).prop('checked'))
-          //  {
-          //   $('#all-delete').fadeIn()
-          // }else{
-          //   $('#all-delete').fadeOut()
-          // }
-        })
+      var $btn_delete = $('#btn_delete')
+
+      $checkbox.on('change',function () {
+        if ($(this).prop('checked')) {
+          console.log($(this).attr('data-id'))
+        } 
       })
+      // $checkbox.on('change',function(){
+      //   标尺变量
+      //   var flag = false         
+      //   $checkbox.each(function(i,item){
+      //     // console.log($(item).prop('checked'))
+         
+      //     if ($(item).prop('checked')) {
+      //       flag = true
+      //     }
+      //     flag ? $btn_delete.fadeIn() : $btn_delete.fadeOut()
+      //   })
+      // })
     })
   </script>
 </body>
