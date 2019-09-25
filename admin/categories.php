@@ -93,7 +93,7 @@
         <div class="col-md-8">
           <div class="page-action">
             <!-- show when multiple checked -->
-            <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
+            <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none" id="all-delete">批量删除</a>
           </div>
           <table class="table table-striped table-bordered table-hover">
             <thead>
@@ -104,7 +104,7 @@
                 <th class="text-center" width="100">操作</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="tbody">
               <?php foreach ($categories as $row): ?>
                 <tr>
                   <td class="text-center"><input type="checkbox"></td>
@@ -129,5 +129,21 @@
   <script src="/static/assets/vendors/jquery/jquery.js"></script>
   <script src="/static/assets/vendors/bootstrap/js/bootstrap.js"></script>
   <script>NProgress.done()</script>
+  <script>
+    $(function($) {
+      var $checkbox = $('#tbody input[type="checkbox"]')
+      $checkbox.on('change',function(){
+        $checkbox.each(function(i,item){
+          console.log($(item).prop('checked'))
+          // if ($(item).prop('checked'))
+          //  {
+          //   $('#all-delete').fadeIn()
+          // }else{
+          //   $('#all-delete').fadeOut()
+          // }
+        })
+      })
+    })
+  </script>
 </body>
 </html>
