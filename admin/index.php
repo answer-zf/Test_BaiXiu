@@ -2,10 +2,11 @@
 
   require_once '../functions.php';
   zf_get_current_user();
-  $posts = zf_fetch("select count(1) as count from posts;");
-  var_dump($posts);
-
-
+  $posts = zf_fetch_one("select count(1) as posts from posts;")['posts'];
+  $posts_drafted = zf_fetch_one("select count(`status`) as drafted from posts where `status` = 'drafted';")['drafted'];
+  $comments = zf_fetch_one("select count(1) as comments from comments;")['comments'];
+  $comments_held = zf_fetch_one("select count(`status`) as held from comments where `status` = 'held';")['held'];
+  $categories = zf_fetch_one("select count(1) as categories from categories;")['categories'];
 ?>
 
 <!DOCTYPE html>
@@ -37,13 +38,15 @@
               <h3 class="panel-title">站点内容统计：</h3>
             </div>
             <ul class="list-group">
-              <li class="list-group-item"><strong>10</strong>篇文章（<strong>2</strong>篇草稿）</li>
-              <li class="list-group-item"><strong>6</strong>个分类</li>
-              <li class="list-group-item"><strong>5</strong>条评论（<strong>1</strong>条待审核）</li>
+              <li class="list-group-item"><strong><?php echo $posts ?></strong>篇文章（<strong><?php echo $posts_drafted ?></strong>篇草稿）</li>
+              <li class="list-group-item"><strong><?php echo $categories ?></strong>个分类</li>
+              <li class="list-group-item"><strong><?php echo $comments ?></strong>条评论（<strong><?php echo $comments_held ?></strong>条待审核）</li>
             </ul>
           </div>
         </div>
-        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <canvas id="pie_chart"></canvas>
+        </div>
         <div class="col-md-4"></div>
       </div>
     </div>
@@ -52,6 +55,42 @@
   <?php include 'inc/aside.php' ?>
   <script src="/static/assets/vendors/jquery/jquery.js"></script>
   <script src="/static/assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="/static/assets/vendors/chart/chart.js/Chart.min.js"></script>
   <script>NProgress.done()</script>
+  <script>
+    var ctx = document.getElementById('pie_chart').getContext('2d');
+    var chart = new Chart(ctx, {
+      // The type of chart we want to create
+      type: 'pie',
+
+      // The data for our dataset
+      data: {
+        labels: ['文章总数', '未审核文章','评论','待审核'],
+        datasets: [
+          {
+            data: [<?php echo $posts; ?>,<?php echo $posts_drafted; ?>,],
+            backgroundColor: [
+              'red',
+              'orange',
+              'yellow',
+              'green',
+            ]
+          },
+          {
+            data: [<?php echo $comments; ?>,<?php echo $comments_held; ?>,],
+            backgroundColor: [
+              'yellow',
+              'green',
+              'yellow',
+              'green',
+            ]
+          }
+        ]
+      },
+
+      // Configuration options go here
+      options: {}
+    });
+  </script>
 </body>
 </html>

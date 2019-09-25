@@ -1,3 +1,44 @@
+<?php 
+  require_once '../functions.php';
+
+  zf_get_current_user();// 登录限制
+
+  // 添加类别
+  function add_category(){
+    if (empty($_POST['name'])) {
+      $GLOBALS['message'] = '请填写类别名称';
+      return;
+    }
+    if (empty($_POST['slug'])) {
+      $GLOBALS['message'] = '请填写slug名称';
+      return;
+    }
+
+    $name = $_POST['name'];
+    
+    $slug = $_POST['slug'];
+    
+    //$create_row = zf_execute("insert into categories (slug,`name`) value ('{$slug}','{$name}')");
+    $create_row = zf_execute("insert into categories values (null,'{$slug}','{$name}')");
+
+    //var_dump(zf_execute($create_row));
+    $GLOBALS['success'] = $create_row > 0 ;
+    $GLOBALS['message'] = $create_row<= 0 ? '添加失败！' : '添加成功';
+
+    // header('Location: http://baixiu.zf/admin/categories.php');
+  } 
+  
+  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    add_category();
+  }  
+
+
+  // 先修改数据再获取
+
+  $categories = zf_fetch_all("select * from categories;");
+  
+ ?>
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -19,12 +60,21 @@
         <h1>分类目录</h1>
       </div>
       <!-- 有错误信息时展示 -->
-      <!-- <div class="alert alert-danger">
-        <strong>错误！</strong>发生XXX错误
-      </div> -->
+      <?php if (isset($message)): ?>
+        <?php if (isset($success)&&$success): ?>
+          <div class="alert alert-success">
+            <strong>成功！</strong><?php echo $message ?>
+          </div>  
+        <?php else: ?>
+          <div class="alert alert-danger">
+            <strong>错误！</strong><?php echo $message ?>
+          </div>  
+        <?php endif ?>    
+      <?php endif ?>
+
       <div class="row">
         <div class="col-md-4">
-          <form>
+          <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
             <h2>添加新分类目录</h2>
             <div class="form-group">
               <label for="name">名称</label>
@@ -55,33 +105,17 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="text-center"><input type="checkbox"></td>
-                <td>未分类</td>
-                <td>uncategorized</td>
-                <td class="text-center">
-                  <a href="javascript:;" class="btn btn-info btn-xs">编辑</a>
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-center"><input type="checkbox"></td>
-                <td>未分类</td>
-                <td>uncategorized</td>
-                <td class="text-center">
-                  <a href="javascript:;" class="btn btn-info btn-xs">编辑</a>
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-center"><input type="checkbox"></td>
-                <td>未分类</td>
-                <td>uncategorized</td>
-                <td class="text-center">
-                  <a href="javascript:;" class="btn btn-info btn-xs">编辑</a>
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
+              <?php foreach ($categories as $row): ?>
+                <tr>
+                  <td class="text-center"><input type="checkbox"></td>
+                  <td><?php echo $row['name'] ?></td>
+                  <td><?php echo $row['slug'] ?></td>
+                  <td class="text-center">
+                    <a href="javascript:;" class="btn btn-info btn-xs">编辑</a>
+                    <a href="/admin/category_delete.php?id=<?php echo $row['id'] ?>" class="btn btn-danger btn-xs">删除</a>
+                  </td>
+                </tr>                
+              <?php endforeach ?>
             </tbody>
           </table>
         </div>
