@@ -1,10 +1,48 @@
 <?php 
 
-  session_start();
+  require_once '../functions.php';
+  zf_get_current_user();
 
-  if (empty($_SESSION['current_login_user'])) {
-    header('Location: /admin/login.php');
+  function add_users(){
+    if (empty($_POST['email'])) {
+      $GLOBALS['message'] = '请输入email';
+      return;
+    }
+    if (empty($_POST['slug'])) {
+      $GLOBALS['message'] = '请输入slug';
+      return;
+    }
+    if (empty($_POST['nickname'])) {
+      $GLOBALS['message'] = '请输入nickname';
+      return;
+    }
+    if (empty($_POST['password'])) {
+      $GLOBALS['message'] = '请输入password';
+      return;
+    }
+    $email = $_POST['email'];
+    $slug = $_POST['slug'];
+    $nickname = $_POST['nickname'];
+    $password = $_POST['password'];
+    if(!strpos($email,'@') || !strpos($email,'.')) {
+      $GLOBALS['message'] = '请输入正确的email';
+      return;
+    }
+    $add_mysql ="insert into users values (null,'{$slug}','{$email}','{$password}','{$nickname}','/static/assets/img/default.png',null,'unactivated')";
+
+    // $add_mysql ="insert into users(slug,email,`password`,nickname,avatar,`status`) values ('{$slug}','{$email}','{$password}','{$nickname}','/static/assets/img/default.png','unactivated')";
+    //var_dump($add_mysql);
+    $add_row = zf_execute($add_mysql);
+    var_dump($add_row);
+    // var_dump($email);
+    $GLOBALS['success'] = $add_row > 0;
+    $GLOBALS['message'] = $add_row <= 0 ? '添加失败' : '添加成功';
   }
+
+  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    add_users();
+  }
+  $users = zf_fetch_all("select * from users;");
 
 ?>
 <!DOCTYPE html>
@@ -28,12 +66,20 @@
         <h1>用户</h1>
       </div>
       <!-- 有错误信息时展示 -->
-      <!-- <div class="alert alert-danger">
-        <strong>错误！</strong>发生XXX错误
-      </div> -->
+      <?php if (isset($success)): ?>
+          <div class="alert alert-success">
+          <strong>成功！</strong><?php echo $message ?>
+        </div>  
+      <?php else: ?>
+        <?php if (isset($message)): ?>
+          <div class="alert alert-danger">
+            <strong>错误！</strong><?php echo $message ?>
+          </div>            
+        <?php endif ?>
+      <?php endif ?>
       <div class="row">
         <div class="col-md-4">
-          <form>
+          <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post" novalidate>
             <h2>添加新用户</h2>
             <div class="form-group">
               <label for="email">邮箱</label>
@@ -75,42 +121,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="text-center"><input type="checkbox"></td>
-                <td class="text-center"><img class="avatar" src="/static/assets/img/default.png"></td>
-                <td>i@zce.me</td>
-                <td>zce</td>
-                <td>汪磊</td>
-                <td>激活</td>
-                <td class="text-center">
-                  <a href="post-add.php" class="btn btn-default btn-xs">编辑</a>
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-center"><input type="checkbox"></td>
-                <td class="text-center"><img class="avatar" src="/static/assets/img/default.png"></td>
-                <td>i@zce.me</td>
-                <td>zce</td>
-                <td>汪磊</td>
-                <td>激活</td>
-                <td class="text-center">
-                  <a href="post-add.php" class="btn btn-default btn-xs">编辑</a>
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-center"><input type="checkbox"></td>
-                <td class="text-center"><img class="avatar" src="/static/assets/img/default.png"></td>
-                <td>i@zce.me</td>
-                <td>zce</td>
-                <td>汪磊</td>
-                <td>激活</td>
-                <td class="text-center">
-                  <a href="post-add.php" class="btn btn-default btn-xs">编辑</a>
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
+              <?php foreach ($users as $row): ?>
+                <tr>
+                  <td class="text-center"><input type="checkbox"></td>
+                  <td class="text-center"><img class="avatar" src="<?php echo $row['avatar'] ?>"></td>
+                  <td><?php echo $row['email'] ?></td>
+                  <td><?php echo $row['slug'] ?></td>
+                  <td><?php echo $row['nickname'] ?></td>
+                  <td><?php echo $row['status'] ?></td>
+                  <td class="text-center">
+                    <a href="post-add.php" class="btn btn-default btn-xs">编辑</a>
+                    <a href="/admin/users_delete.php?id=<?php echo $row['id'] ?>" class="btn btn-danger btn-xs">删除</a>
+                  </td>
+                </tr>                
+              <?php endforeach ?>
             </tbody>
           </table>
         </div>
