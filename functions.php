@@ -40,8 +40,6 @@ function zf_fetch_all($sql){
 		$data[] = $row;
 	}
 
-	mysqli_free_result($query);
-	mysqli_close($connect);
 	return $data;
 }
 
