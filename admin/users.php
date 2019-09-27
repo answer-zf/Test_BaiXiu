@@ -170,7 +170,7 @@
             <a class="btn btn-danger btn-sm" href="/admin/users_delete.php" style="display: none" id="users_all_delete_btn">批量删除</a>
           </div>
           <table class="table table-striped table-bordered table-hover">
-            <thead>
+            <thead id="users_thead">
                <tr>
                 <th class="text-center" width="40"><input type="checkbox"></th>
                 <th class="text-center" width="80">头像</th>
@@ -212,6 +212,7 @@
 
     $(function($){
       var $users_checkbox = $("#users_tbody input[type='checkbox']")
+      var $users_checkbox_all = $("#users_thead input[type='checkbox']")
       var $users_all_delete_btn = $('#users_all_delete_btn')
       var users_id = []
       // console.log($users_all_delete_btn.html())
@@ -226,6 +227,10 @@
         //console.log(users_id.length)
         users_id.length ? $users_all_delete_btn.fadeIn() : $users_all_delete_btn.fadeOut()
         $users_all_delete_btn.prop('search',`?id=${users_id}`) 
+      })
+      $users_checkbox_all.on('change',function(){
+        var users_checked = $(this).prop('checked')
+        $users_checkbox.prop('checked', users_checked).trigger('change')
       })
     })
 

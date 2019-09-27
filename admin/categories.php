@@ -140,7 +140,7 @@
             <a class="btn btn-danger btn-sm" href="/admin/category_delete.php" style="display: none" id="btn_delete">批量删除</a>
           </div>
           <table class="table table-striped table-bordered table-hover">
-            <thead>
+            <thead id="categories_thead">
               <tr>
                 <th class="text-center" width="40"><input type="checkbox" id="checke_all"></th>
                 <th>名称</th>
@@ -176,6 +176,7 @@
   <script>
     $(function($) {
       var $checkbox = $('#tbody input[type="checkbox"]')
+      var $checkbox_all = $('#categories_thead input[type="checkbox"]')
       var $btn_delete = $('#btn_delete')
       var check_id = []
       // var $check_all = $('#checke_all')
@@ -192,14 +193,19 @@
       //   }
       // })
       $checkbox.on('change',function () {
-        var current_id = $(this).prop('checked')
-        if (current_id) {
-          check_id.push($(this).data('id'))
+        var current_id = $(this).data('id');
+        if ($(this).prop('checked')) {
+          check_id.includes(current_id) || check_id.push(current_id)
         } else{
           check_id.splice(check_id.indexOf(current_id), 1)
         }
         $btn_delete.prop('search','?id=' + check_id)
         check_id.length ? $btn_delete.fadeIn() : $btn_delete.fadeOut()
+      })
+      $checkbox_all.on('change',function(){
+          var checked = $(this).prop('checked')
+          $checkbox.prop('checked',checked).trigger('change')
+        
       })
 
       // $checkbox.on('change',function(){
