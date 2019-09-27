@@ -1,6 +1,6 @@
 <?php 	
 	require_once 'config.php';
-	echo DB_HOST;
+	echo ZF_DB_HOST;
  ?>
 <!DOCTYPE html>
 <html lang="en">

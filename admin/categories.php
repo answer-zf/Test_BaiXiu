@@ -47,7 +47,9 @@
 
       $id = $current_edit_page['id'];
       $name = empty($_POST['name']) ? $current_edit_page['name'] : $_POST['name'];
+      $current_edit_page['name'] = $_POST['name'];
       $slug = empty($_POST['slug']) ? $current_edit_page['slug'] : $_POST['slug'];
+      $current_edit_page['slug'] = $_POST['slug'];
       // var_dump("update categories set slug = '{$slug}', name = '{$name}' where id = {$edit_id}");
       $create_row = zf_execute("update categories set slug = '{$slug}', name = '{$name}' where id = {$id}");
 
