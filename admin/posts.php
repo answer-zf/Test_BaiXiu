@@ -1,7 +1,47 @@
 <?php 
   require_once '../functions.php';
   zf_get_current_user();
-?>
+  $page = empty($_GET['page']) ? '1' : (int)$_GET['page'];
+  $size = 20;
+  $offet = ($page - 1) * $size;
+  $posts = zf_fetch_all("
+    select 
+      posts.id,
+      posts.title,
+      users.nickname as users_name,
+      categories.`name` as category_name,
+      posts.created,
+      posts.`status`
+    from posts
+    inner join categories on posts.category_id = categories.id
+    inner join users on posts.user_id = users.id
+    order by posts.created desc
+    limit {$offet},{$size}
+  ");
+  /**
+   * 封装状态的中英文转换
+   * @param  [string] $status [英文状态]
+   * @return [string]         [中文状态]
+   */
+  function convert_status($status){
+    $posts_status = array(
+      'drafted' => '草稿', 
+      'published' => '已发布', 
+      'trashed' => '回收站'
+    );
+    return isset($posts_status[$status]) ? $posts_status[$status] : "未知";
+  }
+  /**
+   * 封装自定义时间
+   * @param  [string] $created [时间格式]
+   * @return [string]          [自定义时间格式]
+   */
+  function convert_date($created){
+    $timestamp = strtotime($created);
+    return date('Y年m月d日<b\r>H:i:s', $timestamp);
+  }
+
+?> 
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -63,42 +103,20 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="text-center"><input type="checkbox"></td>
-            <td>随便一个名称</td>
-            <td>小小</td>
-            <td>潮科技</td>
-            <td class="text-center">2016/10/07</td>
-            <td class="text-center">已发布</td>
-            <td class="text-center">
-              <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="text-center"><input type="checkbox"></td>
-            <td>随便一个名称</td>
-            <td>小小</td>
-            <td>潮科技</td>
-            <td class="text-center">2016/10/07</td>
-            <td class="text-center">已发布</td>
-            <td class="text-center">
-              <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="text-center"><input type="checkbox"></td>
-            <td>随便一个名称</td>
-            <td>小小</td>
-            <td>潮科技</td>
-            <td class="text-center">2016/10/07</td>
-            <td class="text-center">已发布</td>
-            <td class="text-center">
-              <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
+          <?php foreach ($posts as $row): ?>
+            <tr>
+              <td class="text-center"><input type="checkbox"></td>
+              <td><?php echo $row['title'] ?></td>
+              <td><?php echo $row['users_name'] ?></td>
+              <td><?php echo $row['category_name'] ?></td>
+              <td class="text-center"><?php echo convert_date($row['created']) ?></td>
+              <td class="text-center"><?php echo convert_status($row['status']) ?></td>
+              <td class="text-center">
+                <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+              </td>
+            </tr>            
+          <?php endforeach ?>
         </tbody>
       </table>
     </div>
