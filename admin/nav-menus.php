@@ -1,3 +1,7 @@
+<?php 
+  require_once '../functions.php';
+  zf_get_current_user();
+?>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
