@@ -17,7 +17,7 @@
   <script>NProgress.start()</script>
 
   <div class="main">
-<?php include 'inc/navbar.php' ?>
+    <?php include 'inc/navbar.php' ?>
     <div class="container-fluid">
       <div class="page-title">
         <h1>所有评论</h1>
@@ -33,13 +33,7 @@
           <button class="btn btn-warning btn-sm">批量拒绝</button>
           <button class="btn btn-danger btn-sm">批量删除</button>
         </div>
-        <ul class="pagination pagination-sm pull-right">
-          <li><a href="#">上一页</a></li>
-          <li><a href="#">1</a></li>
-          <li><a href="#">2</a></li>
-          <li><a href="#">3</a></li>
-          <li><a href="#">下一页</a></li>
-        </ul>
+        <ul class="pagination pagination-sm pull-right"></ul>
       </div>
       <table class="table table-striped table-bordered table-hover">
         <thead>
@@ -50,55 +44,68 @@
             <th>评论在</th>
             <th>提交于</th>
             <th>状态</th>
-            <th class="text-center" width="100">操作</th>
+            <th class="text-center" width="150">操作</th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="danger">
-            <td class="text-center"><input type="checkbox"></td>
-            <td>大大</td>
-            <td>楼主好人，顶一个</td>
-            <td>《Hello world》</td>
-            <td>2016/10/07</td>
-            <td>未批准</td>
-            <td class="text-center">
-              <a href="post-add.html" class="btn btn-info btn-xs">批准</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="text-center"><input type="checkbox"></td>
-            <td>大大</td>
-            <td>楼主好人，顶一个</td>
-            <td>《Hello world》</td>
-            <td>2016/10/07</td>
-            <td>已批准</td>
-            <td class="text-center">
-              <a href="post-add.html" class="btn btn-warning btn-xs">驳回</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="text-center"><input type="checkbox"></td>
-            <td>大大</td>
-            <td>楼主好人，顶一个</td>
-            <td>《Hello world》</td>
-            <td>2016/10/07</td>
-            <td>已批准</td>
-            <td class="text-center">
-              <a href="post-add.html" class="btn btn-warning btn-xs">驳回</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
-        </tbody>
+        <tbody id="comments_tbody"></tbody>
       </table>
     </div>
   </div>
   <?php $current_page = 'comments' ?>
   <?php include 'inc/aside.php' ?>
-
   <script src="/static/assets/vendors/jquery/jquery.js"></script>
   <script src="/static/assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="/static/assets/vendors/jsrender/jsrender.min.js"></script>
+  <script src="/static/assets/vendors/twbs-pagination/jquery.twbsPagination.js"></script>
+
+
+  <script>
+      var currentPage = 1
+      function loadpage(page){
+        $('#comments_tbody').fadeOut()
+        $.get('/admin/api/comments_select.php',{ page:page},function(res){
+          $('.pagination').twbsPagination({
+            totalPages: res.total_pages,
+            first: '&laquo;',
+            last: '&raquo;',
+            prev: '&lt;',
+            next: '&gt;',
+            visiblePages: 5,
+            initiateStartPageClick: false,
+            onPageClick: function(e,page){
+              loadpage(page)
+            }
+          })
+          var html = $('#comments_tmpl').render({ comments: res.comments_data})
+          $('#comments_tbody').html(html).fadeIn()
+          currentPage = page
+        })
+      }
+      loadpage(currentPage)
+      $('#comments_tbody').on('click','.btn-delete',function(){
+        console.log(11);
+      })
+
+  </script>
+  <script id="comments_tmpl" type="text/x-jsrender">
+    {{for comments}}
+      <tr{{if status === 'approved'}} class="warning"{{else status === 'rejected'}} class="danger"{{/if}} data-id="{{:id}}">
+        <td class="text-center"><input type="checkbox"></td>
+        <td>{{:author}}</td>
+        <td>{{:content}}</td>
+        <td>《{{:title_name}}》</td>
+        <td>{{:created}}</td>
+        <td>{{if status === 'approved'}}批准{{else status === 'rejected'}}未批准{{else status === 'held'}}待审批{{/if}}</td>
+        <td class="text-center">
+          {{if status === 'held'}}
+            <a href="post-add.html" class="btn btn-info btn-xs">批准</a>
+            <a href="post-add.html" class="btn btn-warning btn-xs">驳回</a>
+          {{/if}}
+          <a href="" class="btn btn-danger btn-xs btn-delete">删除</a>
+        </td>
+      </tr>
+    {{/for}}
+  </script>
   <script>NProgress.done()</script>
 </body>
 </html>

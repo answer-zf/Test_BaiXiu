@@ -35,7 +35,7 @@ function zf_fetch_all($sql){
 	if (!$query){		
 		return false;
 	}
-
+	$data =array();
 	while ($row = mysqli_fetch_assoc($query)) {
 		$data[] = $row;
 	}
