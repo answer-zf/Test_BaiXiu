@@ -64,6 +64,12 @@
       function loadpage(page){
         $('#comments_tbody').fadeOut()
         $.get('/admin/api/comments_select.php',{ page:page},function(res){
+          // 分页组件调试
+          if(page > res.total_pages){
+            loadpage(res.total_pages)
+            return
+          }
+          $('.pagination').twbsPagination('destroy');
           $('.pagination').twbsPagination({
             totalPages: res.total_pages,
             first: '&laquo;',
@@ -71,9 +77,10 @@
             prev: '&lt;',
             next: '&gt;',
             visiblePages: 5,
+            startPage: page,
             initiateStartPageClick: false,
             onPageClick: function(e,page){
-              loadpage(page)
+            loadpage(page)
             }
           })
           var html = $('#comments_tmpl').render({ comments: res.comments_data})
@@ -82,8 +89,17 @@
         })
       }
       loadpage(currentPage)
+      // ajax删除  与 服务端删除的区别
       $('#comments_tbody').on('click','.btn-delete',function(){
-        console.log(11);
+        var $tr = $(this).parents().parents()
+        var id = $tr.data('id')
+        $.get('/admin/api/comments_delete.php', { id : id }, function(res){
+          if(!res) return
+          // 直接移除 不合理
+          // $tr.remove()
+          // 重新渲染页面
+          loadpage(currentPage)          
+        })
       })
 
   </script>
@@ -101,7 +117,7 @@
             <a href="post-add.html" class="btn btn-info btn-xs">批准</a>
             <a href="post-add.html" class="btn btn-warning btn-xs">驳回</a>
           {{/if}}
-          <a href="" class="btn btn-danger btn-xs btn-delete">删除</a>
+          <a href="#" class="btn btn-danger btn-xs btn-delete">删除</a>
         </td>
       </tr>
     {{/for}}

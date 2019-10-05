@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>checked</title>
+</head>
+<style>
+	#checkbox{
+		display:none;
+	}
+	i::after{
+		content:'☆';
+	}
+	#checkbox:checked+i::after{
+		content:'★';
+	}
+	ul{
+		list-style: none;
+		font-size: 0;
+	}
+	ul li{
+		display:inline-block;
+		font-size: 14px;
+	}
+	ul > li + li:before{
+		content:'|';
+	}
+</style>
+<body>
+	<label>
+		<input type="checkbox" name="checkbox" id="checkbox">
+		<i style="font-size: normal"></i>		
+	</label>
+	<ul>
+		<li>item</li>
+		<li>item</li>
+		<li>item</li>
+		<li>item</li>
+		<li>item</li>
+		<li>item</li>
+		<li>item</li>
+		<li>item</li>
+		<li>item</li>
+		<li>item</li>
+	</ul>
+</body>
+</html>

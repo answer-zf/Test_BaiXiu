@@ -33,6 +33,7 @@
             <label class="form-image">
               <input id="avatar" type="file">
               <img src="/static/assets/img/default.png">
+              <input type="hidden" name="avatar">
               <i class="mask fa fa-upload"></i>
             </label>
           </div>
@@ -78,6 +79,37 @@
 
   <script src="/static/assets/vendors/jquery/jquery.js"></script>
   <script src="/static/assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script>
+    $('#avatar').on('change',function(){
+
+      $this = $(this)
+
+      var files = $this.prop('files')
+
+      if(!files.length) return
+
+      var file = files[0]
+
+      // h5新增的 专门配合ajax操作，用于客户端服务端间传递二进制数据
+      var data = new FormData()
+
+      data.append('avatar', file)
+
+      var xhr = new XMLHttpRequest()
+
+      xhr.open('POST','/admin/api/upload.php')
+
+      xhr.send(data) // 借助 formdata 传递文件
+
+      xhr.onload = function(){
+
+        $this.siblings('img').attr('src',this.responseText)
+        $this.siblings('input).val(this.responseText)
+
+      }
+    })
+  </script>
   <script>NProgress.done()</script>
+
 </body>
 </html>

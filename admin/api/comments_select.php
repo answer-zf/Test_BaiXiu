@@ -3,7 +3,7 @@
 require_once '../../functions.php';
 
 $page = empty($_GET['page']) ? 1 : (int)$_GET['page'];
-$size = 30;
+$size = 10;
 $offset = ($page - 1) * $size;
 $count = zf_fetch_one('
 	select count(1) as num 
